@@ -1,0 +1,81 @@
+//This code is understood from codeStoryWithMIK
+class Solution {
+    String s;
+    int n;
+
+    //max no of digits = 15 + 1 = 16, //prevPrev -> 0 to 9 10states, same for prev
+    long dpTotNumbers[][][] = new long [16][10][10];
+    long dpTotWaviness[][][] = new long [16][10][10];
+
+    public long func(long num){
+        if(num<100) return 0;
+
+        for(int i=0; i<16; i++){
+            for(int j=0; j<10; j++){
+                Arrays.fill(dpTotNumbers[i][j], -1);
+                Arrays.fill(dpTotWaviness[i][j], -1);
+            }
+        }
+
+        this.s = Long.toString(num);
+        this.n = s.length();
+
+
+        //total numbers, total waviness score
+        long tot[] = new long[2];
+
+        //curr position, prevPrev, prev, isLimitedByDigit, isLeadingZero
+        tot = solve(0, -1, -1, true, true);
+
+        return tot[1];
+    }
+
+    public long[] solve(int curr, int prevPrev, int prev, boolean isLimitedWActualNum, boolean isLeadingZero){
+        if(curr == n) return new long[] {1, 0}; 
+        //found 1 last number, no more score can be generated
+
+        if(!isLimitedWActualNum && !isLeadingZero && prevPrev>=0 && prev>=0){
+            if(dpTotNumbers[curr][prevPrev][prev] != -1 && dpTotWaviness[curr][prevPrev][prev] != -1){
+                return new long[] {dpTotNumbers[curr][prevPrev][prev], dpTotWaviness[curr][prevPrev][prev]};
+            }
+        }
+
+        long totalNumbers = 0;
+        long totalWaveScore = 0;
+
+        int limitDigit = isLimitedWActualNum ? s.charAt(curr)-'0' : 9;
+
+        for(int digit=0; digit<=limitDigit; digit++){
+            boolean isNewLeadingZero = isLeadingZero && (digit==0);
+            
+            int newPrevPrev = prev;
+            int newPrev = isNewLeadingZero ? -1 : digit;
+
+            long remainTot[] = solve(curr+1, newPrevPrev, newPrev, (isLimitedWActualNum && digit==limitDigit), isNewLeadingZero);
+
+            if(!isNewLeadingZero && prevPrev >= 0 && prev >=0){
+                //prevPrev, prev, digit
+                boolean isPeak = (prevPrev < prev && prev > digit);
+                boolean isValley = (prevPrev > prev && prev < digit);
+
+                if(isPeak || isValley){
+                    totalWaveScore += remainTot[0];
+                }
+            }
+
+            totalNumbers += remainTot[0];
+            totalWaveScore += remainTot[1];
+        }
+
+
+        if(!isLimitedWActualNum && !isLeadingZero && prevPrev>=0 && prev>=0){
+            dpTotNumbers[curr][prevPrev][prev] = totalNumbers;
+            dpTotWaviness[curr][prevPrev][prev] = totalWaveScore;
+        }
+        return new long[] {totalNumbers, totalWaveScore};
+    }
+
+    public long totalWaviness(long num1, long num2) {
+        return func(num2) - func(num1-1);
+    }
+}
