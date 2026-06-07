@@ -15,51 +15,23 @@
  */
 class Solution {
     public TreeNode createBinaryTree(int[][] descriptions) {
-
-        //2 cases - create new node, otherwise find the node and connect it
         HashMap<Integer, TreeNode> map = new HashMap<>();
-        //node | freq
-        HashMap<Integer, Integer> nodeCount = new HashMap<>();
+        Set<Integer> children = new HashSet<>();
 
         for(int d[]: descriptions){
-            int parent = d[0];
-            int child = d[1];
-            boolean isLeft = d[2] == 1 ? true: false;
+            map.putIfAbsent(d[0], new TreeNode(d[0]));
+            map.putIfAbsent(d[1], new TreeNode(d[1]));
 
-            //if a node is in parent, and is also in child, it is not a root node
-            // add+1 if parent and add-1 if child, remove if it becomes 0;
-            if(!nodeCount.containsKey(parent) || nodeCount.get(parent)<0)
-                nodeCount.put(parent, nodeCount.getOrDefault(parent, 0)+1);
-            nodeCount.put(child, nodeCount.getOrDefault(child, 0)-1);
-        
-             //get the node and add the child;
+            if(d[2]==1) map.get(d[0]).left = map.get(d[1]);
+            else map.get(d[0]).right = map.get(d[1]);
 
-            TreeNode p = findNode(parent, map);
-            if(isLeft)
-                p.left = findNode(child, map);
-            else
-                p.right = findNode(child, map);
+            children.add(d[1]);
         }
 
-
-        //Iterator<Integer> it = nodeCount.keySet().iterator();
-
-        //nodeCount would contain the root and the leaf nodes. root will be +1 and leaf will be -1
-        TreeNode root = new TreeNode(-1);
-        for(int n: nodeCount.keySet()){
-            if(nodeCount.get(n)==1){
-                root = map.get(n);
-                break;
-            }
+        for(int d[]: descriptions){
+            if(!children.contains(d[0])) return map.get(d[0]);
         }
-        return root;
-    }
 
-    public TreeNode findNode(int n, HashMap<Integer, TreeNode> map){
-        if(map.containsKey(n)) return map.get(n);
-        
-        TreeNode newNode = new TreeNode(n);
-        map.put(n, newNode);
-        return newNode;
+        return null;
     }
 }
