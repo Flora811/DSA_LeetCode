@@ -1,27 +1,32 @@
 //Question for improvement - How can we avoid taking 2 arrays for left and right 
+//Ans: we take count less and equal elements and we take 3 pointers to fill them in answer
 
 // TC: O(n+n) ≃ O(n)
-// SC: O(n+n) ≃ O(n)
+// SC: O(n)
 
 class Solution {
     public int[] pivotArray(int[] nums, int pivot) {
         int n = nums.length;
-        //number | index --> compare number first and then index. 
-        ArrayList<Integer> left = new ArrayList<>();
-        ArrayList<Integer> right = new ArrayList<>();
+        int lessThan = 0;
         int p=0;
-        for(int i=0; i<n; i++){
-            if(nums[i]<pivot) left.add(nums[i]);
-            else if(nums[i]>pivot) right.add(nums[i]);
-            else p++;
-        }
-        int i;
-        for(i=0; i<left.size(); i++){
-            nums[i] = left.get(i);
-        }
-        for(int x = 0; x<p; x++) nums[i++] = pivot;
-        for(int y = 0; y<right.size(); y++) nums[i++] = right.get(y);
 
-        return nums;
+        for(int i=0; i<n; i++){
+            if(nums[i]<pivot) lessThan++;
+            else if(nums[i]==pivot) p++;
+        }
+
+        int less = 0; //idx from which we need to fill lesser elements
+        int equal = lessThan; //idx from which we need to fill equal
+        int greater = lessThan+p; //idx from which we need to fill greater
+
+        int ans[] = new int[n];
+
+        for(int i=0; i<n; i++){
+            if(nums[i]<pivot) ans[less++] = nums[i];
+            else if (nums[i]==pivot) ans[equal++] = nums[i];
+            else ans[greater++] = nums[i];
+        }
+
+        return ans;
     }
 }
