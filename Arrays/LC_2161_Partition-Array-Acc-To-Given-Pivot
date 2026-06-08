@@ -1,30 +1,22 @@
-//Question for improvement - How can we avoid taking 2 arrays for left and right 
-//Ans: we take count less and equal elements and we take 3 pointers to fill them in answer
+//Another approach with 2 pointers. 
 
-// TC: O(n+n) ≃ O(n)
+// TC: O(n) - Visiting each element twice, but at the same time using i and j
 // SC: O(n)
 
 class Solution {
     public int[] pivotArray(int[] nums, int pivot) {
         int n = nums.length;
-        int lessThan = 0;
-        int p=0;
+        int ans[] = new int[n];
+        int left = 0;
+        int right = n-1;
 
-        for(int i=0; i<n; i++){
-            if(nums[i]<pivot) lessThan++;
-            else if(nums[i]==pivot) p++;
+        for(int i=0, j=n-1; i<n; i++, j--){
+            if(nums[i]<pivot) ans[left++] = nums[i];
+            if(nums[j]>pivot) ans[right--] = nums[j];
         }
 
-        int less = 0; //idx from which we need to fill lesser elements
-        int equal = lessThan; //idx from which we need to fill equal
-        int greater = lessThan+p; //idx from which we need to fill greater
-
-        int ans[] = new int[n];
-
-        for(int i=0; i<n; i++){
-            if(nums[i]<pivot) ans[less++] = nums[i];
-            else if (nums[i]==pivot) ans[equal++] = nums[i];
-            else ans[greater++] = nums[i];
+        while(left <= right){
+            ans[left++] = pivot;
         }
 
         return ans;
