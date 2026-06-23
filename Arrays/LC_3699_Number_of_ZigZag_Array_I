@@ -1,0 +1,45 @@
+class Solution {
+    int m, n;
+    int MOD = 1000_000_000 + 7;
+    int t[][][];
+    public int zigZagArrays(int n, int l, int r) {
+        this.m = r-l+1;
+        this.n = n;
+        //[2001][2001][2]
+        this.t = new int[n+1][m+1][2];
+        for(int x[][]: t){
+            for(int y[]: x) Arrays.fill(y, -1);
+        }
+
+        long res = 0;
+
+        for(int startVal=1; startVal<=m; startVal++){
+            //increasing
+            res = (res + solve(1, startVal, true))%MOD;
+            //decreasing
+            res = (res + solve(1, startVal, false)) %MOD;
+        }
+
+        return (int) res;
+    }
+
+    public int solve(int i, int prevVal, boolean increasing){
+        
+        if(i==n) return 1;
+        
+        int inc = (increasing) ? 1:0;
+        if(t[i][prevVal][inc] != -1) return t[i][prevVal][inc];
+        long result = 0;
+        if(increasing){
+            for(int nxtVal=prevVal+1; nxtVal<=m; nxtVal++)
+                result = (result + solve(i+1, nxtVal, false))%MOD;
+        }
+        else{
+            for(int nxtVal = 1; nxtVal<prevVal; nxtVal++){
+                result = (result + solve(i+1, nxtVal, true))%MOD;
+            }
+        }
+
+        return t[i][prevVal][inc] = (int)result;
+    }
+}
