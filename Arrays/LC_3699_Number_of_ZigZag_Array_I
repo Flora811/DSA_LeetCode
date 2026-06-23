@@ -1,4 +1,4 @@
-class Solution { //TC: O(N*M*M) => O(N*M^2) T.L.E
+class Solution { // TC: O(N*M) -> due to cumulative sum :))
     int m, n;
     int MOD = 1000_000_000 + 7;
     long t[][][];
@@ -14,16 +14,21 @@ class Solution { //TC: O(N*M*M) => O(N*M^2) T.L.E
         }
 
         for(int i=n-1; i>=0; i--){
+
+            long cumSumI[] = new long[m+1];
+            long cumSumD[] = new long[m+1];
+            for(int val=1; val <= m; val++){
+                cumSumD[val] = (cumSumD[val-1] + t[i+1][val][0]) % MOD;
+                cumSumI[val] = (cumSumI[val-1] + t[i+1][val][1]) % MOD;
+            }
+            
             for(int prevVal=1; prevVal <= m; prevVal++){
 
                 //increasing
-                for(int nxtVal = prevVal+1; nxtVal<=m; nxtVal++){
-                    t[i][prevVal][1] = (t[i][prevVal][1] + t[i+1][nxtVal][0]) %MOD;
-                }
+                t[i][prevVal][1] = (cumSumD[m] - cumSumD[prevVal] + MOD) % MOD;
+                
                 //decreasing
-                for(int nxtVal = 1; nxtVal<prevVal; nxtVal++){
-                    t[i][prevVal][0] = (t[i][prevVal][0] + t[i+1][nxtVal][1]) %MOD;
-                }
+                t[i][prevVal][0] = cumSumI[prevVal-1];
             }
         }
 
